@@ -1,79 +1,45 @@
 #include <iostream>
-#include <vector>
 #include <queue>
-#include <cmath> 
 using namespace std;
-
-int N, L, R;
-int A[50][50];
-bool visited[50][50];
-int dx[] = {-1, 1, 0, 0};
-int dy[] = {0, 0, -1, 1};
-
-void bfs(int x, int y, int& totalCount, int& totalPop) {
+int N, L, R, A[50][50], d[] = {0, 1, 0, -1, 0}, ans;
+bool move() {
+    bool visited[50][50] = {}, flag = false;
     queue<pair<int, int>> q;
-    vector<pair<int, int>> unionCountries;
-    q.push(make_pair(x, y));
-    visited[x][y] = true;
-
-    while (!q.empty()) {
-        int cx = q.front().first;
-        int cy = q.front().second;
-        q.pop();
-
-        unionCountries.push_back(make_pair(cx, cy));
-        totalPop += A[cx][cy];
-        totalCount++;
-
-        for (int i = 0; i < 4; i++) {
-            int nx = cx + dx[i];
-            int ny = cy + dy[i];
-
-            if (nx >= 0 && nx < N && ny >= 0 && ny < N && !visited[nx][ny]) {
-                int popDiff = abs(A[cx][cy] - A[nx][ny]);
-                if (popDiff >= L && popDiff <= R) {
-                    visited[nx][ny] = true;
-                    q.push(make_pair(nx, ny));
+    for (int i = 0; i < N; ++i)
+        for (int j = 0; j < N; ++j)
+            if (!visited[i][j]) {
+                visited[i][j] = true;
+                int sum = A[i][j], cnt = 1;
+                queue<pair<int, int>> u;
+                q.push({i, j});
+                u.push({i, j});
+                while (!q.empty()) {
+                    auto [x, y] = q.front(); q.pop();
+                    for (int k = 0; k < 4; ++k) {
+                        int nx = x + d[k], ny = y + d[k + 1];
+                        if (nx >= 0 && nx < N && ny >= 0 && ny < N && !visited[nx][ny] && abs(A[x][y] - A[nx][ny]) >= L && abs(A[x][y] - A[nx][ny]) <= R) {
+                            q.push({nx, ny});
+                            u.push({nx, ny});
+                            visited[nx][ny] = true;
+                            sum += A[nx][ny];
+                            ++cnt;
+                        }
+                    }
+                }
+                if (cnt > 1) {
+                    flag = true;
+                    int newVal = sum / cnt;
+                    while (!u.empty()) {
+                        auto [x, y] = u.front(); u.pop();
+                        A[x][y] = newVal;
+                    }
                 }
             }
-        }
-    }
-
-    int newPopulation = totalPop / totalCount;
-    for (auto& country : unionCountries) {
-        A[country.first][country.second] = newPopulation;
-    }
+    return flag;
 }
-
 int main() {
     cin >> N >> L >> R;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            cin >> A[i][j];
-        }
-    }
-
-    int days = 0;
-    while (true) {
-        bool moved = false;
-        fill(&visited[0][0], &visited[49][50], false); 
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (!visited[i][j]) {
-                    int totalCount = 0;
-                    int totalPop = 0;
-                    bfs(i, j, totalCount, totalPop);
-
-                    if (totalCount > 1) moved = true; 
-                }
-            }
-        }
-
-        if (!moved) break; 
-        days++;
-    }
-
-    cout << days << endl;
-    return 0;
+    for (int i = 0; i < N; ++i) for (int j = 0; j < N; ++j) cin >> A[i][j];
+    while (move()) ++ans;
+    cout << ans;
 }
