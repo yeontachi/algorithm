@@ -1,35 +1,38 @@
 #include <iostream>
 using namespace std;
-int d = 0, n = 0, result = 0;
-int arr_d[300000] = { 0 };
-int arr_n[300000] = { 0 };
-int visited[300000] = { 0 };
-int main() {
-	cin >> d >> n;
 
-	for (int i = 0; i < d; i++) {
-		cin >> arr_d[i];
-		if (i > 0 && arr_d[i - 1] < arr_d[i]) arr_d[i] = arr_d[i - 1];
-	}
-	for (int i = 0; i < n; i++)
-		cin >> arr_n[i];
+int D=0, N=0, result=0;
+int oven[300000]={0};
+int pizza[300000]={0};
+int ans[300000]={0};
 
+int main(void){
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
+    cin>>D>>N;
 
-	int cnt = 0;
-	for (int i = d - 1; i >= 0; i--) {
-		if (arr_n[cnt] <= arr_d[i]) {
-			visited[cnt] = 1 + i;
-			cnt++;
-		}
-		if (cnt == n)
-			break;
-	}
+    for(int i=0; i<D; i++){
+        cin>>oven[i];
+        if(i>0 && oven[i-1]<oven[i]) oven[i]=oven[i-1];
+    }
 
-	if (cnt == n)
-		cout << visited[cnt - 1] << endl;
-	else
-		cout << 0 << endl;
+    for(int i=0; i<N; i++){
+        cin>>pizza[i];
+    }
 
-	return 0;
+    int cnt=0;
+    for(int i=D-1; i>=0; i--){
+        if(pizza[cnt]<=oven[i]){
+            ans[cnt]=1+i;
+            cnt++;
+        }
+        if(cnt==N) break;
+    }
+
+    if(cnt==N) cout<<ans[cnt-1]<<'\n';
+    else cout<<0;
+
+    return 0;
 }
